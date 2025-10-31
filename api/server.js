@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Donation } from "./models/donation.js";
+import { Donation } from "../models/donation.js";
 
 dotenv.config();
 const app = express();
