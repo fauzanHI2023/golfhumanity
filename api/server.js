@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Terima form donasi via POST ke root "/"
-app.post("/", async (req, res) => {
+app.post("/api/server", async (req, res) => {
   try {
     const { name, email, phone, donation } = req.body;
 
