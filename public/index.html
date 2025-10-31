@@ -296,6 +296,7 @@
         const donationInput = document.getElementById("donationAmount");
         const customAmount = document.getElementById("customAmount");
         const submitBtn = document.getElementById("submitBtn");
+        const submitBtnText = document.getElementById("submitBtnText");
         const form = document.getElementById("donationForm");
 
         // Elemen modal
@@ -306,6 +307,12 @@
         const modalEmail = document.getElementById("modalEmail");
         const modalPhone = document.getElementById("modalPhone");
         const modalDonation = document.getElementById("modalDonation");
+
+        // Tambahkan elemen spinner di tombol
+        const spinner = document.createElement("span");
+        spinner.classList.add("spinner");
+        spinner.style.display = "none";
+        submitBtn.prepend(spinner);
 
         // Aktifkan tombol donasi
         donationButtons.forEach((btn) => {
@@ -345,9 +352,23 @@
         closeModal.addEventListener("click", closeModalFunc);
         closeModalBtn.addEventListener("click", closeModalFunc);
 
+        // Fungsi untuk tampilkan spinner
+        const setLoading = (loading) => {
+          if (loading) {
+            submitBtn.disabled = true;
+            spinner.style.display = "inline-block";
+            submitBtnText.textContent = "Mengirim...";
+          } else {
+            spinner.style.display = "none";
+            submitBtnText.textContent = "Kirim Donasi";
+            submitBtn.disabled = false;
+          }
+        };
+
         // Kirim form
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
+          setLoading(true);
 
           const formData = {
             name: document.getElementById("name").value,
@@ -373,6 +394,8 @@
           } catch (err) {
             console.error("Error:", err);
             alert("Terjadi kesalahan pada server.");
+          } finally {
+            setLoading(false);
           }
         });
       });
