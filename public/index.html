@@ -296,7 +296,18 @@
         const donationInput = document.getElementById("donationAmount");
         const customAmount = document.getElementById("customAmount");
         const submitBtn = document.getElementById("submitBtn");
+        const form = document.getElementById("donationForm");
 
+        // Elemen modal
+        const successModal = document.getElementById("successModal");
+        const closeModal = document.getElementById("closeModal");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const modalName = document.getElementById("modalName");
+        const modalEmail = document.getElementById("modalEmail");
+        const modalPhone = document.getElementById("modalPhone");
+        const modalDonation = document.getElementById("modalDonation");
+
+        // Aktifkan tombol donasi
         donationButtons.forEach((btn) => {
           btn.addEventListener("click", () => {
             donationButtons.forEach((b) => b.classList.remove("active"));
@@ -312,8 +323,32 @@
           submitBtn.disabled = !e.target.value;
         });
 
-        document.getElementById("donationForm").addEventListener("submit", async (e) => {
+        // Fungsi buka/tutup modal
+        const openModal = (data) => {
+          modalName.textContent = data.name;
+          modalEmail.textContent = data.email;
+          modalPhone.textContent = data.phone;
+          modalDonation.textContent = `Rp ${Number(data.donation).toLocaleString("id-ID")}`;
+          successModal.classList.add("active");
+          document.body.style.overflow = "hidden";
+        };
+
+        const closeModalFunc = () => {
+          successModal.classList.remove("active");
+          document.body.style.overflow = "";
+          form.reset();
+          submitBtn.disabled = true;
+          donationButtons.forEach((b) => b.classList.remove("active"));
+          customAmount.value = "";
+        };
+
+        closeModal.addEventListener("click", closeModalFunc);
+        closeModalBtn.addEventListener("click", closeModalFunc);
+
+        // Kirim form
+        form.addEventListener("submit", async (e) => {
           e.preventDefault();
+
           const formData = {
             name: document.getElementById("name").value,
             email: document.getElementById("email").value,
@@ -321,14 +356,24 @@
             donation: document.getElementById("donationAmount").value,
           };
 
-          const res = await fetch("/api/server", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          });
+          try {
+            const res = await fetch("/api/server", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(formData),
+            });
 
-          const result = await res.json();
-          alert(result.message);
+            const result = await res.json();
+
+            if (res.ok && result.success) {
+              openModal(formData);
+            } else {
+              alert("Gagal mengirim donasi. Silakan coba lagi.");
+            }
+          } catch (err) {
+            console.error("Error:", err);
+            alert("Terjadi kesalahan pada server.");
+          }
         });
       });
     </script>
